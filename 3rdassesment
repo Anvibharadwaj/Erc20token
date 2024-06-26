@@ -1,0 +1,42 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+// Import the ERC20 interface from the zeppelin library,which provides standard functions and interfaces for ERC20 tokens.
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract MyToken is ERC20 {
+    address public owner;
+
+    // Define token details in the constructor by passing name,symbol and totalsupply as parameters
+    constructor(string memory name, string memory symbol, uint256 totalSupply) ERC20(name, symbol) {
+        owner = msg.sender;
+        _mint(msg.sender, totalSupply);
+    }
+
+    // Function for the owner to mint new tokens.The onlyOwner modifier restricts this function so that only the owner can call it.
+    function mint(address to, uint256 amount) public onlyOwner {
+        _mint(to, amount);
+    }
+
+    // Function for burning tokens by any user  burns (destroy) their tokens by specifying the amount to burn. The tokens are burned from the caller's (msg.sender) account.
+    function burn(uint256 amount) public {
+        _burn(msg.sender, amount);
+    }
+
+    // Modifier to restrict functions to the contract owner.his modifier checks if the caller is the owner of the contract. If not, it reverts the transaction with an error message "Only owner can mint tokens". If the caller is the owner, it allows the function execution to proceed.
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can mint tokens");
+        _;
+    }
+    
+    // Function to transfer tokens from one account to another
+    function transfer(address to, uint256 amount) public override returns (bool) {
+        _transfer(msg.sender, to, amount);
+        return true;
+    }
+
+    // Function to check the balance of an account
+    function balanceOf(address account) public view override returns (uint256) {
+        return super.balanceOf(account);
+    }
+}
